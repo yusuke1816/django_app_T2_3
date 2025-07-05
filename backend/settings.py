@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+  
 
     # 追加アプリ
     'rest_framework',
@@ -23,6 +24,11 @@ INSTALLED_APPS = [
     'main',
   
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # これを一番上に
