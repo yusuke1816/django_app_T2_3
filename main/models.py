@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Sum
-
+from django.contrib.auth.models import User
 class Expense(models.Model):
     CATEGORY_CHOICES = [
         ('food', '食費'),
@@ -8,6 +8,9 @@ class Expense(models.Model):
         ('entertainment', '娯楽'),
         ('other', 'その他'),
     ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')  # ←追加
+
 
     title = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

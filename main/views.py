@@ -6,6 +6,22 @@ import json
 from .models import Expense
 from datetime import datetime
 
+
+# main/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import SignUpSerializer
+
+class SignUpView(APIView):
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def expenses_list(request):
