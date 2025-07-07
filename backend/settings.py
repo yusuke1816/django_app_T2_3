@@ -27,7 +27,10 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
 MIDDLEWARE = [
@@ -103,9 +106,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://192.168.3.6:3000",   # Next.js のローカルIPを追加
-    "http://localhost:3000",      # もし Next.js を localhost:3000 でも動かすなら追加
+    "http://192.168.3.6:3000",
+    "http://localhost:3000",
+    "http://10.41.190.13:3000",  # 追加する
 ]
+
 
 # 開発中は全部許可もOK（セキュリティ注意）
 # CORS_ALLOW_ALL_ORIGINS = True

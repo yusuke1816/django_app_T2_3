@@ -4,6 +4,14 @@ from .models import Expense
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+
+
+
+from rest_framework import serializers
+from .models import Expense
+from django.contrib.auth.models import User
+
+
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
@@ -30,3 +38,20 @@ class SignUpSerializer(serializers.ModelSerializer):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
         return user
+    
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    shared_with = UserSerializer(many=True, read_only=True)  # 共有ユーザーの情報を表示
+    shared_with_ids = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True, source='shared_with'
+    )  # 更新用フィールド（ユーザーIDで共有設定）
+
+    class Meta:
+        model = Expense
+        fields = '__all__'  # もしくは ['id', ..., 'shared_with', 'shared_with_ids'] に変更可
