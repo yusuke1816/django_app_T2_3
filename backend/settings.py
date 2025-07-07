@@ -85,6 +85,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 #         'PORT': '5432',
 #     }
 # }
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 既にある場合は追加不要
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 import os
 import dj_database_url
