@@ -6,7 +6,11 @@ SECRET_KEY = 'django-insecure-@gyghje2co6=7^tv@$7!r(@nd4003#q!744-()b9sd_g$#mq6@
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+     'localhost',
+    '127.0.0.1',
+    'money-manager-ceec.onrender.com',  # ←これを追加！
+]
 
 # アプリケーション定義
 INSTALLED_APPS = [
