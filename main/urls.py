@@ -3,7 +3,7 @@ from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import friend_expenses 
 from .views import UserMeView  # ← 追加
-
+from .views import create_admin
 urlpatterns = [
     path('expenses/', views.expenses_list, name='expenses-list'),
     path('expenses/total-jpy/', views.total_jpy_expenses, name='total-jpy-expenses'),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('friends/request/<int:request_id>/respond/', views.RespondFriendRequestView.as_view(), name='respond_friend_request'),
     path('friends/<int:friend_id>/expenses/', friend_expenses, name='friend-expenses'),
     # 他のURLも同様に
+      path('create-admin/', create_admin),  # ←
 ]
 
 

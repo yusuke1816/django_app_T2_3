@@ -311,3 +311,15 @@ def friend_expenses(request, friend_id):
         for e in expenses
     ]
     return Response(data)
+
+
+from django.http import HttpResponse
+from django.contrib.auth import get_user_model
+
+def create_admin(request):
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'yourpassword123')
+        return HttpResponse("Admin created!")
+    else:
+        return HttpResponse("Admin already exists.")
