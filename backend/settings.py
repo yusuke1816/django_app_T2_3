@@ -75,18 +75,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'money_manager_app',
+#         'USER': 'tamurayusuke',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',  # 本番なら DB のホスト名やURL
+#         'PORT': '5432',
+#     }
+# }
+
+import os
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'money_manager_app',
-        'USER': 'tamurayusuke',
-        'PASSWORD': '',
-        'HOST': 'localhost',  # 本番なら DB のホスト名やURL
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
-
-
 # パスワードバリデーション
 AUTH_PASSWORD_VALIDATORS = [
     {
