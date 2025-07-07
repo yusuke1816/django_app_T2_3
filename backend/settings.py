@@ -85,13 +85,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 #         'PORT': '5432',
 #     }
 # }
-from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# 既にある場合は追加不要
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 import os
@@ -115,7 +109,13 @@ else:
             'PORT': '5432',
         }
     }
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 省略
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ← 追加してください
 # パスワードバリデーション
 AUTH_PASSWORD_VALIDATORS = [
     {
