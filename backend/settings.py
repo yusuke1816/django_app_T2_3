@@ -102,16 +102,17 @@ if DATABASE_URL:
     }
 else:
     # ローカル環境用デフォルト（PostgreSQLの情報は自分の環境に合わせて）
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'money_manager_app',
-            'USER': 'tamurayusuke',
-            'PASSWORD': '',  # パスワードあれば入れてください
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
+ DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'money_manager_app',
+        'USER': 'tamurayusuke',
+        'PASSWORD': 'adminpass',
+         'HOST': 'postgresql://money_manager_app_user:TelqzS7KMxWaevgUflZfA9YlV0PYciC9@dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com/money_manager_app',  
+         'PORT': '', 
     }
+}
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 省略

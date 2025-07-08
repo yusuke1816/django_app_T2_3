@@ -1,10 +1,10 @@
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.http import require_http_methods
-from django.db.models import Q
+from django.db.models import Q, Sum
 import json
 from datetime import datetime
 
-from .models import Expense
+from .models import Expense, FriendRequest, Friend
 from .serializers import SignUpSerializer
 
 from rest_framework.views import APIView
@@ -13,23 +13,20 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from django.db.models import Sum
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 # ユーザー登録
 class SignUpView(APIView):
-
     permission_classes = [] 
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'ユーザー登録に成功しました'}, status=status.HTTP_201_CREATED)
         print(serializer.errors)
-
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
 
 # 支出の取得・登録
 @api_view(["GET", "POST"])
@@ -66,7 +63,7 @@ def expenses_list(request):
             date_obj = datetime.strptime(data['date'], '%Y-%m-%d').date()
 
             expense = Expense.objects.create(
-                user=request.user,  # 🔑ここが重要
+                user=request.user,
                 title=data['title'],
                 amount=data['amount'],
                 currency=data.get('currency', 'JPY'),
@@ -83,8 +80,7 @@ def expenses_list(request):
             })
 
         except (KeyError, json.JSONDecodeError, ValueError) as e:
-            return HttpResponseBadRequest(f"Invalid data: {str(e)}")
-
+            return HttpResponseBadRequest(f"不正なデータです: {str(e)}")
 
 # 合計金額（JPYのみ）
 @api_view(["GET"])
@@ -93,7 +89,6 @@ def expenses_list(request):
 def total_jpy_expenses(request):
     total = Expense.objects.filter(user=request.user, currency='JPY').aggregate(total=Sum('amount'))['total'] or 0
     return JsonResponse({"totalAmount": float(total)})
-
 
 # ユーザー情報取得API
 class UserMeView(APIView):
@@ -108,15 +103,6 @@ class UserMeView(APIView):
             "email": user.email,
         })
 
-from django.db import models
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Friend
-
 # フレンド一覧取得
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
@@ -124,7 +110,7 @@ from .models import Friend
 def friend_list(request):
     user = request.user
     friends_qs = Friend.objects.filter(
-        (models.Q(from_user=user) | models.Q(to_user=user)) & models.Q(accepted=True)
+        (Q(from_user=user) | Q(to_user=user)) & Q(accepted=True)
     )
     friends = []
     for f in friends_qs:
@@ -135,7 +121,6 @@ def friend_list(request):
         })
     return Response(friends)
 
-
 # フレンド申請送信
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
@@ -145,24 +130,22 @@ def send_friend_request(request):
     to_user_id = request.data.get('to_user_id')
 
     if not to_user_id:
-        return Response({'error': 'to_user_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'to_user_idは必須です'}, status=status.HTTP_400_BAD_REQUEST)
 
     if int(to_user_id) == from_user.id:
-        return Response({'error': 'Cannot send friend request to yourself'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': '自分自身にフレンド申請はできません'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         to_user = User.objects.get(id=to_user_id)
     except User.DoesNotExist:
-        return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'ユーザーが存在しません'}, status=status.HTTP_404_NOT_FOUND)
 
-    # 既に申請や友達関係がないか確認
     if Friend.objects.filter(from_user=from_user, to_user=to_user).exists() or \
        Friend.objects.filter(from_user=to_user, to_user=from_user).exists():
-        return Response({'error': 'Friend request already exists or you are already friends'}, status=status.HTTP_400_BAD_REQUEST)
-    friend_request = FriendRequest.objects.create(from_user=from_user, to_user=to_user, status='pending')
+        return Response({'error': '既に申請済み、または友達関係です'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({'message': 'Friend request sent'})
-
+    FriendRequest.objects.create(from_user=from_user, to_user=to_user, status='pending')
+    return Response({'message': 'フレンド申請を送信しました'})
 
 # フレンド申請承認
 @api_view(['POST'])
@@ -173,17 +156,16 @@ def accept_friend_request(request):
     from_user_id = request.data.get('from_user_id')
 
     if not from_user_id:
-        return Response({'error': 'from_user_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'from_user_idは必須です'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         friend_request = Friend.objects.get(from_user_id=from_user_id, to_user=user, accepted=False)
     except Friend.DoesNotExist:
-        return Response({'error': 'Friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'フレンド申請が見つかりません'}, status=status.HTTP_404_NOT_FOUND)
 
     friend_request.accepted = True
     friend_request.save()
-    return Response({'message': 'Friend request accepted'})
-
+    return Response({'message': 'フレンド申請を承認しました'})
 
 # フレンド申請拒否または削除
 @api_view(['POST'])
@@ -194,21 +176,20 @@ def remove_friend(request):
     other_user_id = request.data.get('user_id')
 
     if not other_user_id:
-        return Response({'error': 'user_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'user_idは必須です'}, status=status.HTTP_400_BAD_REQUEST)
 
     friend = Friend.objects.filter(
-        (models.Q(from_user=user, to_user_id=other_user_id) |
-         models.Q(from_user_id=other_user_id, to_user=user))
+        (Q(from_user=user, to_user_id=other_user_id) |
+         Q(from_user_id=other_user_id, to_user=user))
     )
     deleted_count, _ = friend.delete()
 
     if deleted_count == 0:
-        return Response({'error': 'Friend relationship not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'フレンド関係が見つかりません'}, status=status.HTTP_404_NOT_FOUND)
 
-    return Response({'message': 'Friend removed or request canceled'})
-from django.contrib.auth.models import User
+    return Response({'message': 'フレンドを削除または申請をキャンセルしました'})
 
-
+# ユーザー検索
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -217,19 +198,11 @@ def user_search(request):
     if not q:
         return Response([])
 
-    # usernameに部分一致で検索、かつ自分自身は除外
     users = User.objects.filter(username__icontains=q).exclude(id=request.user.id)
     data = [{"id": u.id, "username": u.username} for u in users]
     return Response(data)
 
-
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-
-from .models import FriendRequest
-
+# 申請一覧取得
 class FriendRequestsListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -248,13 +221,7 @@ class FriendRequestsListView(APIView):
         ]
         return Response(data)
 
-
-    
-
-
-
-from .models import FriendRequest, Friend  # ← Friend を忘れずインポート
-
+# フレンド申請の承認・拒否
 class RespondFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -269,28 +236,21 @@ class RespondFriendRequestView(APIView):
             return Response({"error": "acceptフィールドが必要です"}, status=status.HTTP_400_BAD_REQUEST)
 
         if accept:
-            # 承認処理
             fr.status = 'accepted'
             fr.save()
-
-            # 双方向のFriend関係を作成
             Friend.objects.create(from_user=fr.from_user, to_user=fr.to_user, accepted=True)
         else:
-            # 拒否処理
             fr.status = 'rejected'
             fr.save()
 
         return Response({"message": "処理が完了しました"})
 
-
-
+# フレンドの支出一覧取得
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def friend_expenses(request, friend_id):
     user = request.user
-    from .models import Friend, Expense
-    from django.db.models import Q
 
     # フレンド関係かどうか確認
     is_friend = Friend.objects.filter(
@@ -314,14 +274,11 @@ def friend_expenses(request, friend_id):
     ]
     return Response(data)
 
-
-from django.http import HttpResponse
-from django.contrib.auth import get_user_model
-
+# 管理者作成
 def create_admin(request):
     User = get_user_model()
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser('admin', 'admin@example.com', 'yourpassword123')
-        return HttpResponse("Admin created!")
+        return HttpResponse("管理者を作成しました！")
     else:
-        return HttpResponse("Admin already exists.")
+        return HttpResponse("管理者はすでに存在します。")
