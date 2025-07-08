@@ -105,9 +105,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'money_manager_app',
         'USER': 'money_manager_app_user',
-        'PASSWORD': 'TelqzS7KMxWaevgUflZfA9YlV0PYciC9',
-        'HOST': 'dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com',  # ←フルホスト名に修正
+        'PASSWORD': 'パスワード',
+        'HOST': 'dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com',
         'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
