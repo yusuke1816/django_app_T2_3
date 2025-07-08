@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-@gyghje2co6=7^tv@$7!r(@nd4003#q!744-()b9sd_g$#mq6@
 DEBUG = True
 
 ALLOWED_HOSTS = [
-     'localhost',
+    'localhost',
     '127.0.0.1',
     'money-manager-ceec.onrender.com',  # ←これを追加！
 ]
@@ -154,6 +154,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.3.6:3000",
     "http://localhost:3000",
     "http://10.41.190.13:3000",  # 追加する
+    "https://money-manager-ceec.onrender.com"
 ]
 
 
