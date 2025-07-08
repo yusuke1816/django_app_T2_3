@@ -6,6 +6,19 @@ SECRET_KEY = 'django-insecure-@gyghje2co6=7^tv@$7!r(@nd4003#q!744-()b9sd_g$#mq6@
 
 DEBUG = True
 
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # これを一番上に
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
@@ -37,16 +50,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # これを一番上に
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -159,6 +162,11 @@ CORS_ALLOWED_ORIGINS = [
     "https://money-manager-ceec.vercel.app",
 ]
 
+from corsheaders.defaults import default_headers
 
 # 開発中は全部許可もOK（セキュリティ注意）
 # CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'authorization',
+    'content-type',
+]
