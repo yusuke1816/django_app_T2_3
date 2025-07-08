@@ -154,7 +154,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.3.6:3000",
     "http://localhost:3000",
     "http://10.41.190.13:3000",  # 追加する
-    "https://money-manager-ceec.onrender.com"
+    "https://money-manager-ceec.onrender.com",
+    "https://django-app-t2-3z-frontend.vercel.app",
+    "https://money-manager-ceec.vercel.app",
 ]
 
 
