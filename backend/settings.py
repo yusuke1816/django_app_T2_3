@@ -1,9 +1,9 @@
 from pathlib import Path
-
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-@gyghje2co6=7^tv@$7!r(@nd4003#q!744-()b9sd_g$#mq6@'
-
+load_dotenv() 
 DEBUG = True
 
 
@@ -105,14 +105,15 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'money_manager_app',
         'USER': 'money_manager_app_user',
-        'PASSWORD': 'パスワード',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),  # ここは環境変数から取得推奨
         'HOST': 'dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'require',
+            'sslmode': 'require',  # ← これがないとSSL接続拒否される
         },
     }
 }
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
