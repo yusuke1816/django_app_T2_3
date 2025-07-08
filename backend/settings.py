@@ -108,7 +108,7 @@ else:
         'NAME': 'money_manager_app',
         'USER': 'tamurayusuke',
         'PASSWORD': 'adminpass',
-         'HOST': 'postgresql://money_manager_app_user:TelqzS7KMxWaevgUflZfA9YlV0PYciC9@dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com/money_manager_app',  
+         'HOST': '',  
          'PORT': '', 
     }
 }
