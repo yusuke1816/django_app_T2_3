@@ -19,12 +19,15 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
 
 
+from rest_framework import serializers
+from django.contrib.auth.models import User
+
 class SignUpSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'confirm_password']
+        fields = ['username', 'email', 'password', 'confirm_password']  # ← 追加
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -38,7 +41,8 @@ class SignUpSerializer(serializers.ModelSerializer):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
         return user
-    
+
+
 
 
 class UserSerializer(serializers.ModelSerializer):
