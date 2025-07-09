@@ -3,13 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from .models import Expense
 
-# Expense シリアライザ
-class ExpenseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Expense
-        fields = '__all__'
-
+# -------------------------------
 # ユーザー登録用シリアライザ
+# -------------------------------
 class SignUpSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True, required=True, label="確認用パスワード")
 
@@ -17,13 +13,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'password', 'confirm_password']
         extra_kwargs = {
-            'username': {
-                'required': True,
-                'error_messages': {
-                    'required': 'ユーザー名は必須です。',
-                    'unique': 'このユーザー名は既に使われています。',
-                }
-            },
             'email': {
                 'required': True,
                 'error_messages': {
@@ -40,6 +29,11 @@ class SignUpSerializer(serializers.ModelSerializer):
             },
         }
 
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError('このユーザー名は既に使われています。')
+        return value
+
     def validate(self, data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({'confirm_password': 'パスワードが一致しません。'})
@@ -55,19 +49,27 @@ class SignUpSerializer(serializers.ModelSerializer):
         return user
 
 
-
-
+# -------------------------------
+# ユーザー表示用シリアライザ（共有用）
+# -------------------------------
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username']
 
+
+# -------------------------------
+# 支出シリアライザ
+# -------------------------------
 class ExpenseSerializer(serializers.ModelSerializer):
-    shared_with = UserSerializer(many=True, read_only=True)  # 共有ユーザーの情報を表示
+    shared_with = UserSerializer(many=True, read_only=True)  # 表示用
     shared_with_ids = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='shared_with'
-    )  # 更新用フィールド（ユーザーIDで共有設定）
+        queryset=User.objects.all(),
+        many=True,
+        write_only=True,
+        source='shared_with'  # create/update時に shared_with にマップ
+    )
 
     class Meta:
         model = Expense
-        fields = '__all__'  # もしくは ['id', ..., 'shared_with', 'shared_with_ids'] に変更可
+        fields = '__all__'
