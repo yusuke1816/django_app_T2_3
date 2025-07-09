@@ -111,11 +111,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'money_manager_app',
         'USER': 'money_manager_app_user',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),  # 環境変数
         'HOST': 'dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'require',  # ← これを必ず入れる
+            'sslmode': 'require',
         },
     }
 }
