@@ -111,13 +111,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'moneyed',
         'USER': 'moneyed_user',
-        'PASSWORD': '0uHKnWkB2GFBhu0APQ465qcSJdUlD4DL',  # 環境変数
+        'PASSWORD': os.environ.get('DB_PASSWORD'),  # 環境変数
         'HOST': 'dpg-d1n27kjuibrs73e283f0-a.oregon-postgres.render.com',
         'PORT': '5432',
-       'OPTIONS': {
-    'sslmode': 'require',
-}
-
+        'OPTIONS': {
+             'sslmode': 'require',
+        },
     }
 }
 
