@@ -1,41 +1,53 @@
-# main/serializers.py
 from rest_framework import serializers
-from .models import Expense
 from django.contrib.auth.models import User
-from rest_framework import serializers
-
-
-
-
-from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from .models import Expense
-from django.contrib.auth.models import User
 
-
+# Expense シリアライザ
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = '__all__'
 
-
-
-from rest_framework import serializers
-from django.contrib.auth.models import User
-
+# ユーザー登録用シリアライザ
 class SignUpSerializer(serializers.ModelSerializer):
-    confirm_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True, required=True, label="確認用パスワード")
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'confirm_password']  # ← 追加
+        fields = ['username', 'email', 'password', 'confirm_password']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'username': {
+                'required': True,
+                'error_messages': {
+                    'required': 'ユーザー名は必須です。',
+                    'unique': 'このユーザー名は既に使われています。',
+                }
+            },
+            'email': {
+                'required': True,
+                'error_messages': {
+                    'required': 'メールアドレスは必須です。',
+                    'unique': 'このメールアドレスは既に使われています。',
+                }
+            },
+            'password': {
+                'write_only': True,
+                'required': True,
+                'error_messages': {
+                    'required': 'パスワードは必須です。',
+                }
+            },
         }
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError("Passwords do not match.")
+            raise serializers.ValidationError({'confirm_password': 'パスワードが一致しません。'})
         return data
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
