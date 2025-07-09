@@ -123,7 +123,11 @@ DATABASES = {
     }
 }
 
+# settings.py
+LANGUAGE_CODE = 'ja'
 
+# タイムゾーンも日本にするのが一般的です
+TIME_ZONE = 'Asia/Tokyo'
 
 
 # DATABASES = {
