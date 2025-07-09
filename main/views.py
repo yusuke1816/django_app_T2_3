@@ -26,7 +26,7 @@ class SignUpView(APIView):
             serializer.save()
             return Response({'message': 'ユーザー登録に成功しました'}, status=status.HTTP_201_CREATED)
         print(serializer.errors)
-        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 支出の取得・登録
 @api_view(["GET", "POST"])
