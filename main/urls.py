@@ -4,7 +4,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import friend_expenses 
 from .views import UserMeView  # ← 追加
 from .views import create_admin
+from django.http import JsonResponse
 urlpatterns = [
+    path('', lambda request: JsonResponse({'message': 'Welcome to the Money Manager API 🎉'})),
     path('expenses/', views.expenses_list, name='expenses-list'),
     path('expenses/total-jpy/', views.total_jpy_expenses, name='total-jpy-expenses'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
