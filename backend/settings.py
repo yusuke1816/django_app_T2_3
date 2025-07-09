@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'money-manager-ceec.onrender.com',  # ←これを追加！
+    'django-app-t2-3.onrender.com',
 ]
 
 # アプリケーション定義
@@ -173,6 +174,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://money-manager-ceec.onrender.com",
     "https://django-app-t2-3z-frontend.vercel.app",
     "https://money-manager-ceec.vercel.app",
+    "http://10.96.31.30:3000",
 ]
 
 from corsheaders.defaults import default_headers
