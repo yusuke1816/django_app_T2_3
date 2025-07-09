@@ -98,7 +98,12 @@ from decouple import config
 
 
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# DATABASE_URL = os.environ.get("DATABASE_URL")
 
 DATABASES = {
     'default': {
@@ -114,6 +119,20 @@ DATABASES = {
     }
 }
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'money_manager_app',
+#         'USER': 'money_manager_app_user',
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),  # 環境変数で管理推奨
+#         'HOST': 'dpg-d1m1ij7diees738vp1rg-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',  # これを追加
+#         },
+#     }
+# }
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -137,15 +156,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-# 言語・タイムゾーン
-LANGUAGE_CODE = 'ja'
-
-TIME_ZONE = 'Asia/Tokyo'
-
-USE_I18N = True
-
-USE_TZ = True
 
 # 静的ファイル
 STATIC_URL = 'static/'
