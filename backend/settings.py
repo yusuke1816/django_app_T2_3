@@ -118,7 +118,7 @@ DATABASES = {
         'HOST': 'dpg-d1n27kjuibrs73e283f0-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
-             'sslmode': 'verify-full',
+             'sslmode': 'require',
         },
     }
 }
