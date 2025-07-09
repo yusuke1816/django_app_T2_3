@@ -18,14 +18,15 @@ from django.contrib.auth import get_user_model
 
 # ユーザー登録
 class SignUpView(APIView):
-    permission_classes = [] 
+    permission_classes = []
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'ユーザー登録に成功しました'}, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
+
+        # ここを変更
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 支出の取得・登録
