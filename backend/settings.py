@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-@gyghje2co6=7^tv@$7!r(@nd4003#q!744-()b9sd_g$#mq6@'
 load_dotenv() 
-DEBUG = True
+
+DEBUG = False
 
 
 MIDDLEWARE = [
