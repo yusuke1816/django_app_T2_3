@@ -20,6 +20,8 @@ urlpatterns = [
     path('friends/<int:friend_id>/expenses/', friend_expenses, name='friend-expenses'),
     # 他のURLも同様に
       path('create-admin/', create_admin),  # ←
+      path('expenses/<int:pk>/', views.expense_detail, name='expense-detail'),
+
 ]
 
 

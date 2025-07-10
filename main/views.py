@@ -283,3 +283,17 @@ def create_admin(request):
         return HttpResponse("管理者を作成しました！")
     else:
         return HttpResponse("管理者はすでに存在します。")
+
+
+
+@api_view(["DELETE"])
+@authentication_classes([JWTAuthentication])  # または TokenAuthentication
+@permission_classes([IsAuthenticated])
+def expense_detail(request, pk):
+    try:
+        expense = Expense.objects.get(pk=pk, user=request.user)
+    except Expense.DoesNotExist:
+        return Response({"detail": "対象の支出が見つかりません。"}, status=status.HTTP_404_NOT_FOUND)
+
+    expense.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
